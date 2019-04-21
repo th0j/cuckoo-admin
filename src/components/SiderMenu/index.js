@@ -19,32 +19,32 @@ export default class SiderMenu extends Component {
         <Menu theme="dark" mode="inline" defaultSelectedKeys={['1']}>
           <Menu.Item key="1">
             <Icon type="dashboard" />
-            <span>Dashboard</span>
+            <span>Bảng điều khiển</span>
           </Menu.Item>
           <Menu.Item key="2">
             <Icon type="ordered-list" />
-            <span>Orders</span>
+            <span>Đơn hàng</span>
           </Menu.Item>
           <SubMenu
             key="subMenuProduct"
             title={
               <span>
                 <Icon type="shop" />
-                Products
+                Sản phẩm
               </span>
             }
           >
             <Menu.Item key="3">
               <Link to="/products" className="nav-text">
-                List Products
+                Danh sách sản phẩm
               </Link>
             </Menu.Item>
-            <Menu.Item key="4">Category</Menu.Item>
+            <Menu.Item key="4">Danh mục</Menu.Item>
             <Menu.Item key="5">Brand</Menu.Item>
           </SubMenu>
           <Menu.Item key="6">
             <Icon type="user" />
-            <span>Users</span>
+            <span>Khách hàng</span>
           </Menu.Item>
         </Menu>
       </Sider>
