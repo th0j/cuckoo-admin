@@ -1,11 +1,15 @@
 import React from 'react';
-import { Route } from 'react-router-dom';
+import { Route, Switch } from 'react-router-dom';
 import { BasicLayout } from './layouts';
-import { Products } from './components';
+import { Products, ProductForm } from './components';
 
 const App = () => (
   <BasicLayout>
-    <Route path="/products" component={Products} />
+    <Switch>
+      <Route path="/products" exact component={Products} />
+      <Route path="/products/new" exact component={ProductForm} />
+      <Route path="/products/:productId" component={ProductForm} />
+    </Switch>
   </BasicLayout>
 );
 
