@@ -13,6 +13,7 @@ class ProductForm extends Component {
       id: '',
       name: '',
       description: '',
+      price: 0,
     },
   };
 
@@ -170,6 +171,13 @@ class ProductForm extends Component {
             <Input
               placeholder="Description"
               value={product.description}
+              onChange={this.changeHandler}
+            />
+          </Form.Item>
+          <Form.Item>
+            <Input
+              placeholder="Price"
+              value={product.price}
               onChange={this.changeHandler}
             />
           </Form.Item>

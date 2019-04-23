@@ -40,7 +40,7 @@ export default class SiderMenu extends Component {
               </Link>
             </Menu.Item>
             <Menu.Item key="4">
-              <Link to="/brands" className="nav-text">
+              <Link to="/categories" className="nav-text">
                 Danh mục
               </Link>
             </Menu.Item>

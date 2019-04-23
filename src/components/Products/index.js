@@ -1,5 +1,5 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
-import React, { Component, createContext } from 'react';
+import React, { Component, createContext, PureComponent } from 'react';
 import { Button, Icon, Modal, Table, Tag } from 'antd';
 import axios from 'axios';
 import format from 'date-fns/format';
@@ -16,7 +16,7 @@ import List from './List';
 
 // const ProductContext = createContext();
 
-class Products extends Component {
+class Products extends PureComponent {
   state = {
     products: [],
     isEditing: false,
@@ -111,7 +111,6 @@ class Products extends Component {
         ),
       },
     ];
-
     return (
       <div>
         <Link to="/products/new">
