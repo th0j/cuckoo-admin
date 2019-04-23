@@ -1,5 +1,6 @@
+import SiderMenu from './SiderMenu';
 import Products from './Products';
 import ProductForm from './ProductForm';
-import SiderMenu from './SiderMenu';
+import Brands from './Brands';
 
-export { Products, ProductForm, SiderMenu };
+export { Products, ProductForm, SiderMenu, Brands };

@@ -39,8 +39,16 @@ export default class SiderMenu extends Component {
                 Danh sách sản phẩm
               </Link>
             </Menu.Item>
-            <Menu.Item key="4">Danh mục</Menu.Item>
-            <Menu.Item key="5">Brand</Menu.Item>
+            <Menu.Item key="4">
+              <Link to="/brands" className="nav-text">
+                Danh mục
+              </Link>
+            </Menu.Item>
+            <Menu.Item key="5">
+              <Link to="/brands" className="nav-text">
+                Brands
+              </Link>
+            </Menu.Item>
           </SubMenu>
           <Menu.Item key="6">
             <Icon type="user" />
