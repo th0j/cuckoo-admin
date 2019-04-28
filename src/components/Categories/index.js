@@ -1,5 +1,7 @@
 import React, { Component } from 'react';
-import { Button, Icon, Modal, Table, Tag } from 'antd';
+import { Button, Icon, Table } from 'antd';
+import { Link } from 'react-router-dom';
+import _ from 'lodash';
 import request from '../../utils/request';
 
 class Categories extends Component {
@@ -12,7 +14,17 @@ class Categories extends Component {
       title: 'Tên',
       dataIndex: 'name',
       key: 'name',
-      render: text => <span>{text}</span>,
+      render: (text, record) => (
+        <Link
+          to={{
+            pathname: '/categories/' + record.key,
+            category: record,
+            isEditing: true,
+          }}
+        >
+          {text}
+        </Link>
+      ),
     },
     {
       title: '',
@@ -31,25 +43,37 @@ class Categories extends Component {
     let data = [];
     request.get(`/categories`).then(res => {
       res.data.data.forEach((v, i) => {
-        const brand = {
+        const category = {
           key: v.attributes.id,
           name: v.attributes.name,
         };
-        data.push(brand);
+        data.push(category);
       });
-      this.setState({ brands: data });
+      this.setState({ categories: data });
     });
   }
 
-  onDelete(key) {}
+  onDelete(key) {
+    request.delete(`/categories/` + key).then(res => {
+      if (res.status === 204) {
+        let categories = [...this.state.categories];
+        _.remove(categories, product => {
+          return product.key === key;
+        });
+        this.setState({ categories: categories });
+      }
+    });
+  }
 
   render() {
     return (
       <div>
-        <Button type="primary" style={{ marginBottom: '20px' }}>
-          <Icon type="plus" />
-          Thêm
-        </Button>
+        <Link to="/categories/new">
+          <Button type="primary" style={{ marginBottom: '20px' }}>
+            <Icon type="plus" />
+            Thêm
+          </Button>
+        </Link>
         <Table dataSource={[...this.state.categories]} columns={this.columns} />
       </div>
     );

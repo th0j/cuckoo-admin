@@ -3,71 +3,69 @@ import { Form, Input, Button } from 'antd';
 import _ from 'lodash';
 import request from '../../utils/request';
 
-class BrandForm extends Component {
+class CategoryForm extends Component {
   state = {
     isEditing: false,
-    brand: {
+    category: {
       key: '',
       name: '',
     },
   };
 
   changeHandler = ({ target: { value, name } }) => {
-    let brand = { ...this.state.brand };
-    brand.name = value;
+    let category = { ...this.state.category };
+    category.name = value;
 
-    this.setState({ brand: brand });
+    this.setState({ category: category });
   };
 
   createHandler = () => {
-    request.post('/brands', this.state.brand).then(res => {
-      this.props.history.push('/brands');
+    request.post('/categories', this.state.category).then(res => {
+      this.props.history.push('/categories');
     });
   };
 
   editHandler = () => {
     console.log('editing');
-
-    const { brand } = this.state;
-
+    const { category } = this.state;
     const {
       match: { params },
     } = this.props;
 
-    request.put(`/brands/` + params.brandId, brand).then(res => {
-      let brand = res.data.data.attributes;
-      this.setState({ brand: { name: brand.name } });
+    request.put(`/categories/` + params.categoryId, category).then(res => {
+      let category = res.data.data.attributes;
+      this.setState({ category: { name: category.name } });
 
-      this.props.history.push('/brands');
+      this.props.history.push('/categories');
     });
   };
 
   componentDidMount() {
     const {
       match: { params },
-      location: { brand, isEditing },
+      location: { category, isEditing },
     } = this.props;
 
     // Get from props
-    if (_.isEmpty(brand) === false) {
-      this.setState({ brand: brand, isEditing: isEditing });
-    } else if (_.isEmpty(params.brandId) === false) {
+    if (_.isEmpty(category) === false) {
+      this.setState({ category: category, isEditing: isEditing });
+    } else if (_.isEmpty(params.categoryId) === false) {
       // Get from server
-      request.get('/brand/' + params.brandId).then(res => {
-        let brand = res.data.data.attributes;
-        this.setState({ brand: { name: brand.name } });
+      request.get('/categories/' + params.categoryId).then(res => {
+        let category = res.data.data.attributes;
+        this.setState({ category: { name: category.name } });
       });
     }
   }
 
   handleOnSubmit = e => {
     e.preventDefault();
-    const updatedBrand = { ...this.state.brand };
-    this.props.updateAccount(updatedBrand);
+    const updatedCategory = { ...this.state.category };
+    this.props.updateAccount(updatedCategory);
   };
 
   render() {
-    const brand = { ...this.state.brand };
+    const category = { ...this.state.category };
     const action =
       this.state.isEditing === false ? (
         <Button
@@ -91,8 +89,8 @@ class BrandForm extends Component {
         <Form>
           <Form.Item>
             <Input
-              placeholder="Tên brand"
-              value={brand.name}
+              placeholder="Tên danh muc"
+              value={category.name}
               onChange={this.changeHandler}
             />
           </Form.Item>
@@ -103,4 +101,4 @@ class BrandForm extends Component {
   }
 }
 
-export default BrandForm;
+export default CategoryForm;

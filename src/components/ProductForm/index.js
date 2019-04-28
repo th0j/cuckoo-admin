@@ -103,7 +103,7 @@ class ProductForm extends Component {
     // Get from props
     if (_.isEmpty(product) === false) {
       this.setState({ product: product, isEditing: isEditing });
-    } else {
+    } else if (_.isEmpty(params.productId) === false) {
       // Get from server
       axios
         .get('http://localhost:3000/api/admin/products/' + params.productId)
