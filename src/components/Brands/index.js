@@ -1,10 +1,17 @@
 import React, { Component } from 'react';
-import { Button, Icon, Modal, Table, Tag } from 'antd';
+import { Button, Icon, Table } from 'antd';
+import _ from 'lodash';
+import { Link } from 'react-router-dom';
 import request from '../../utils/request';
+
+// import BrandForm from '../BrandForm';
+// import { BrandContext } from './BrandContext';
+// import BrandProvider, { BrandConsumer } from './BrandProvider';
 
 class Brands extends Component {
   state = {
     brands: [],
+    visible: false,
   };
 
   columns = [
@@ -12,7 +19,17 @@ class Brands extends Component {
       title: 'Tên',
       dataIndex: 'name',
       key: 'name',
-      render: text => <span>{text}</span>,
+      render: (text, record) => (
+        <Link
+          to={{
+            pathname: '/brands/' + record.key,
+            brand: record,
+            isEditing: true,
+          }}
+        >
+          {text}
+        </Link>
+      ),
     },
     {
       title: '',
@@ -41,17 +58,31 @@ class Brands extends Component {
     });
   }
 
-  onDelete(key) {}
+  onDelete(key) {
+    request.delete(`/brands/` + key).then(res => {
+      if (res.status === 204) {
+        let brands = [...this.state.brands];
+        _.remove(brands, product => {
+          return product.key === key;
+        });
+        this.setState({ brands: brands });
+      }
+    });
+  }
 
   render() {
     return (
       <div>
-        <Button type="primary" style={{ marginBottom: '20px' }}>
-          <Icon type="plus" />
-          Thêm
-        </Button>
-        {console.log(this.state.brands)}
-        <Table dataSource={[...this.state.brands]} columns={this.columns} />
+        <Link to="/brands/new">
+          <Button type="primary" style={{ marginBottom: '20px' }}>
+            <Icon type="plus" />
+            Thêm
+          </Button>
+        </Link>
+        <Table
+          dataSource={[...this.state.brands]}
+          columns={this.columns}
+        />{' '}
       </div>
     );
   }

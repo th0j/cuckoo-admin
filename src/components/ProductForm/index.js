@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Form, Input, Select, Button, InputNumber, Icon, Upload } from 'antd';
+import { Form, Input, Button, Icon, Upload } from 'antd';
 
 import _ from 'lodash';
 import axios from 'axios';

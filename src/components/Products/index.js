@@ -1,13 +1,13 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
-import React, { Component, createContext, PureComponent } from 'react';
-import { Button, Icon, Modal, Table, Tag } from 'antd';
+import React, { PureComponent } from 'react';
+import { Button, Icon, Table, Tag } from 'antd';
 import axios from 'axios';
 import format from 'date-fns/format';
 import _ from 'lodash';
 import { Link } from 'react-router-dom';
 
-import ProductForm from '../ProductForm';
-import List from './List';
+// import ProductForm from '../ProductForm';
+// import List from './List';
 
 // https://upload.lixibox.com/system/pictures/files/000/039/367/small/1552296373
 // small: 148 x 100
