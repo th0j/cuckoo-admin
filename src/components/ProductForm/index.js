@@ -1,97 +1,88 @@
+/* eslint-disable no-unused-expressions */
 import React, { Component } from 'react';
-import { Form, Input, Button, Icon, Upload } from 'antd';
-
+import {
+  Form,
+  Input,
+  Button,
+  Icon,
+  Upload,
+  Select,
+  InputNumber,
+  notification,
+} from 'antd';
+import { Link } from 'react-router-dom';
 import _ from 'lodash';
-import axios from 'axios';
+import request from '../../utils/request';
+import SelectBrands from './SelectBrands';
 
 class ProductForm extends Component {
   state = {
     fileList: [],
-    uploading: false,
     isEditing: false,
-    product: {
-      id: '',
-      name: '',
-      description: '',
-      price: 0,
-    },
+    selectBrands: [],
+    selectCategories: [],
   };
 
-  createHandler = file => {
-    const { fileList, product } = this.state;
+  handleSubmit = e => {
+    e.preventDefault();
 
-    const formData = new FormData();
-    fileList.forEach(file => {
-      formData.append('images[]', file);
+    this.props.form.validateFields((err, values) => {
+      console.log(err);
+      if (err) {
+        return;
+      } else {
+        const params = new FormData();
+        const { fileList } = this.state;
+        fileList.forEach(file => {
+          params.append('images[]', file);
+        });
+
+        params.append('brand_id', values.brand);
+        params.append('category_id', values.category);
+        params.append('name', values.name);
+        this._createOrUpdateProduct(params);
+      }
     });
-    formData.append('brand_id', 2);
-    formData.append('category_id', 1);
-    formData.append('name', product.name);
+  };
 
-    this.setState({
-      uploading: true,
-    });
-
+  _createOrUpdateProduct = product => {
     const config = {
       headers: {
         'content-type': 'multipart/form-data',
       },
     };
 
-    axios
-      .post(`http://localhost:3000/api/admin/products`, formData, config)
-      .then(res => {
+    if (this.state.isEditing === false) {
+      request.post(`/products`, product, config).then(res => {
         this.setState({
           fileList: [],
-          uploading: false,
         });
         this.props.history.push('/products');
-      });
-  };
 
-  editHandler = file => {
-    const { fileList, product } = this.state;
-    const {
-      match: { params },
-    } = this.props;
-    const formData = new FormData();
-    fileList.forEach(file => {
-      formData.append('images[]', file);
-    });
-    formData.append('brand_id', 2);
-    formData.append('category_id', 1);
-    formData.append('name', product.name);
-
-    this.setState({
-      uploading: true,
-    });
-
-    const config = {
-      headers: {
-        'content-type': 'multipart/form-data',
-      },
-    };
-
-    axios
-      .put(
-        `http://localhost:3000/api/admin/products/` + params.productId,
-        formData,
-        config
-      )
-      .then(res => {
-        this.setState({
-          fileList: [],
-          uploading: false,
+        notification['success']({
+          message: 'Thông báo',
+          description: 'Thêm sản phẩm mới thành công',
         });
-
-        this.props.history.push('/products');
       });
-  };
+    } else {
+      const {
+        match: { params },
+      } = this.props;
 
-  changeHandler = event => {
-    let product = { ...this.state.product };
-    product.name = event.target.value;
-    this.setState({ product: product });
+      request
+        .put(`/products/` + params.productId, product, config)
+        .then(res => {
+          this.setState({
+            fileList: [],
+          });
+
+          this.props.history.push('/products');
+          notification['success']({
+            message: 'Thông báo',
+            description: 'Sửa sản phẩm thành công',
+          });
+        });
+    }
   };
 
   componentDidMount() {
@@ -102,20 +93,77 @@ class ProductForm extends Component {
 
     // Get from props
     if (_.isEmpty(product) === false) {
-      this.setState({ product: product, isEditing: isEditing });
+      this.setState({ isEditing: isEditing });
+      this._fillProductData(product);
     } else if (_.isEmpty(params.productId) === false) {
       // Get from server
-      axios
-        .get('http://localhost:3000/api/admin/products/' + params.productId)
-        .then(res => {
-          let product = res.data.data.attributes;
-          this.setState({ product: { name: product.name } });
-        });
+      this._fetchProductById(params.productId);
     }
+
+    this._fetchBrands();
+    this._fetchCategories();
   }
 
+  _fetchProductById = productId => {
+    request.get('/products/' + productId).then(res => {
+      let product = res.data.data.attributes;
+      this._fillProductData(product);
+      this.setState({ isEditing: true });
+    });
+  };
+
+  _fetchBrands = () => {
+    request.get('/brands').then(res => {
+      const Option = Select.Option;
+      let selectBrands = [...this.state.selectBrands];
+
+      res.data.data.forEach(v => {
+        selectBrands.push(
+          <Option key={v.attributes.id}>{v.attributes.name}</Option>
+        );
+      });
+      this.setState({ selectBrands: selectBrands });
+    });
+  };
+
+  _fetchCategories = () => {
+    request.get('/categories').then(res => {
+      const Option = Select.Option;
+      let selectCategories = [...this.state.selectCategories];
+
+      res.data.data.forEach(v => {
+        selectCategories.push(
+          <Option key={v.attributes.id}>{v.attributes.name}</Option>
+        );
+      });
+
+      this.setState({
+        selectCategories: selectCategories,
+      });
+    });
+  };
+
+  _fillProductData = product => {
+    // const { product } = this.state;
+    this.props.form.setFieldsValue({
+      name: product.name,
+    });
+  };
+
+  selectedBrandChange = value => {
+    this.props.form.setfieldsvalue({
+      brand: value,
+    });
+  };
+
+  selectedCategoryChange = value => {
+    this.props.form.setFieldsValue({
+      category: value,
+    });
+  };
+
   render() {
-    const { uploading, fileList, product } = this.state;
+    const { uploading, fileList } = this.state;
     const props = {
       onRemove: file => {
         this.setState(state => {
@@ -138,50 +186,93 @@ class ProductForm extends Component {
 
     const action =
       this.state.isEditing === false ? (
-        <Button
-          type="primary"
-          onClick={this.createHandler}
-          loading={uploading}
-          style={{ marginTop: 16 }}
-        >
-          {uploading ? 'Đang tạo...' : 'Tạo'}
+        <Button type="primary" htmlType="submit" style={{ marginTop: 16 }}>
+          Tạo
         </Button>
       ) : (
         <Button
           type="primary"
-          onClick={this.editHandler}
+          htmlType="submit"
           loading={uploading}
           style={{ marginTop: 16 }}
         >
-          {uploading ? 'Đang cập nhật...' : 'Cập nhật'}
+          Cập nhật
         </Button>
       );
+    const formItemLayout = {
+      labelCol: { span: 4 },
+      wrapperCol: { span: 18 },
+    };
+
+    const { getFieldDecorator } = this.props.form;
 
     return (
       <div>
-        <Form>
-          <Form.Item>
-            <Input
-              placeholder="Tên sản phẩm"
-              value={product.name}
-              onChange={this.changeHandler}
-            />
+        <Link to="/products/new">
+          <Button type="primary" style={{ marginBottom: '20px' }}>
+            <Icon type="plus" />
+            Mẫu mã
+          </Button>
+        </Link>
+        <Form layout="horizontal" onSubmit={this.handleSubmit}>
+          <Form.Item label="Tên" {...formItemLayout}>
+            {getFieldDecorator('name', {
+              rules: [
+                { required: true, message: 'Vui lòng nhập tên sản phẩm!' },
+              ],
+            })(<Input placeholder="Tên sản phẩm" />)}
           </Form.Item>
-          <Form.Item lable="description">
-            <Input
-              placeholder="Description"
-              value={product.description}
-              onChange={this.changeHandler}
-            />
+
+          <Form.Item label="Thương hiệu" {...formItemLayout}>
+            {getFieldDecorator('brand', {
+              rules: [
+                { required: true, message: 'Vui lòng chọn thương hiệu!' },
+              ],
+              initialValue: this.state.selectBrands[0]
+                ? this.state.selectBrands[0].key + ''
+                : '',
+            })(
+              <Select
+                style={{ width: 120 }}
+                onChange={this.selectedBrandChange}
+              >
+                {this.state.selectBrands}
+              </Select>
+            )}
           </Form.Item>
-          <Form.Item>
-            <Input
-              placeholder="Price"
-              value={product.price}
-              onChange={this.changeHandler}
-            />
+
+          <Form.Item label="Danh mục" {...formItemLayout}>
+            {getFieldDecorator('category', {
+              rules: [{ required: true, message: 'Vui lòng chọn danh mục!' }],
+              initialValue: this.state.selectCategories[0]
+                ? this.state.selectCategories[0].key + ''
+                : '',
+            })(
+              <Select
+                style={{ width: 120 }}
+                onChange={this.selectedCategoryChange}
+              >
+                {this.state.selectCategories}
+              </Select>
+            )}
           </Form.Item>
-          <Form.Item label="Upload">
+
+          <Form.Item label="Mô tả chi tiết" {...formItemLayout}>
+            <Input placeholder="Description" />
+          </Form.Item>
+          <Form.Item label="Giá bán ra" {...formItemLayout}>
+            {getFieldDecorator('price', {
+              rules: [{ required: true, message: 'Vui lòng nhập giá bán ra!' }],
+            })(<InputNumber min={1} max={10000} placeholder="Giá bán ra" />)}
+
+            <span>.000 VND</span>
+          </Form.Item>
+
+          <Form.Item label="Giá nhập vào" {...formItemLayout}>
+            <InputNumber min={1} max={10000} placeholder="Giá nhập vào" />
+            <span>.000 VND</span>
+          </Form.Item>
+          <Form.Item label="Upload" {...formItemLayout}>
             {' '}
             <Upload {...props}>
               <Button>
@@ -196,4 +287,5 @@ class ProductForm extends Component {
   }
 }
 
-export default ProductForm;
+const WrappedProductForm = Form.create({ name: 'product' })(ProductForm);
+export default WrappedProductForm;

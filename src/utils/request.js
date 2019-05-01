@@ -26,7 +26,7 @@ import axios from 'axios';
 // }
 
 const instance = axios.create({
-  baseURL: 'http://localhost:3000/api/admin',
+  baseURL: 'http://localhost:3000/admin',
 });
 
 // instance.defaults.headers.common['Authorization'] = '';
