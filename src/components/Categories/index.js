@@ -42,10 +42,10 @@ class Categories extends Component {
   componentDidMount() {
     let data = [];
     request.get(`/categories`).then(res => {
-      res.data.data.forEach((v, i) => {
+      res.data.forEach((v, i) => {
         const category = {
-          key: v.attributes.id,
-          name: v.attributes.name,
+          key: v.id,
+          name: v.name,
         };
         data.push(category);
       });

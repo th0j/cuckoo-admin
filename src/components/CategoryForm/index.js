@@ -33,7 +33,7 @@ class CategoryForm extends Component {
     } = this.props;
 
     request.put(`/categories/` + params.categoryId, category).then(res => {
-      let category = res.data.data.attributes;
+      let category = res.data;
       this.setState({ category: { name: category.name } });
 
       this.props.history.push('/categories');
@@ -52,7 +52,7 @@ class CategoryForm extends Component {
     } else if (_.isEmpty(params.categoryId) === false) {
       // Get from server
       request.get('/categories/' + params.categoryId).then(res => {
-        let category = res.data.data.attributes;
+        let category = res.data;
         this.setState({ category: { name: category.name } });
       });
     }

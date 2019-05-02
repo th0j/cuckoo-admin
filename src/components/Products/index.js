@@ -20,12 +20,13 @@ class Products extends PureComponent {
   componentDidMount() {
     let data = [];
     request.get(`/products`).then(res => {
-      res.data.data.forEach((v, i) => {
+      res.data.forEach(v => {
         const product = {
-          key: v.attributes.id,
-          name: v.attributes.name,
+          key: v.id,
+          name: v.name,
           availableOn: format(new Date(), 'DD/mm/YYYY') + '',
-          img: v.attributes.images[0],
+          img: v.variants[0].image_url,
+
           category: 'son',
         };
         data.push(product);

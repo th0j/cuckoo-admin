@@ -35,7 +35,7 @@ class BrandForm extends Component {
     } = this.props;
 
     request.put(`/brands/` + params.brandId, brand).then(res => {
-      let brand = res.data.data.attributes;
+      let brand = res.data;
       this.setState({ brand: { name: brand.name } });
 
       this.props.history.push('/brands');
@@ -54,7 +54,7 @@ class BrandForm extends Component {
     } else if (_.isEmpty(params.brandId) === false) {
       // Get from server
       request.get('/brand/' + params.brandId).then(res => {
-        let brand = res.data.data.attributes;
+        let brand = res.data;
         this.setState({ brand: { name: brand.name } });
       });
     }

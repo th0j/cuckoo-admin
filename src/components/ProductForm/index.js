@@ -33,13 +33,15 @@ class ProductForm extends Component {
       } else {
         const params = new FormData();
         const { fileList } = this.state;
+
         fileList.forEach(file => {
-          params.append('images[]', file);
+          params.append('variant[image]', file);
         });
 
-        params.append('brand_id', values.brand);
-        params.append('category_id', values.category);
-        params.append('name', values.name);
+        params.append('product[brand_id]', values.brand);
+        params.append('product[category_id]', values.category);
+        params.append('product[name]', values.name);
+        params.append('variant[price]', values.price);
         this._createOrUpdateProduct(params);
       }
     });
@@ -106,7 +108,7 @@ class ProductForm extends Component {
 
   _fetchProductById = productId => {
     request.get('/products/' + productId).then(res => {
-      let product = res.data.data.attributes;
+      let product = res.data;
       this._fillProductData(product);
       this.setState({ isEditing: true });
     });
@@ -117,10 +119,8 @@ class ProductForm extends Component {
       const Option = Select.Option;
       let selectBrands = [...this.state.selectBrands];
 
-      res.data.data.forEach(v => {
-        selectBrands.push(
-          <Option key={v.attributes.id}>{v.attributes.name}</Option>
-        );
+      res.data.forEach(v => {
+        selectBrands.push(<Option key={v.id}>{v.name}</Option>);
       });
       this.setState({ selectBrands: selectBrands });
     });
@@ -131,10 +131,8 @@ class ProductForm extends Component {
       const Option = Select.Option;
       let selectCategories = [...this.state.selectCategories];
 
-      res.data.data.forEach(v => {
-        selectCategories.push(
-          <Option key={v.attributes.id}>{v.attributes.name}</Option>
-        );
+      res.data.forEach(v => {
+        selectCategories.push(<Option key={v.id}>{v.name}</Option>);
       });
 
       this.setState({
@@ -144,7 +142,6 @@ class ProductForm extends Component {
   };
 
   _fillProductData = product => {
-    // const { product } = this.state;
     this.props.form.setFieldsValue({
       name: product.name,
     });
@@ -234,7 +231,7 @@ class ProductForm extends Component {
             })(
               <Select
                 style={{ width: 120 }}
-                onChange={this.selectedBrandChange}
+                // onChange={this.selectedBrandChange}
               >
                 {this.state.selectBrands}
               </Select>
@@ -250,7 +247,7 @@ class ProductForm extends Component {
             })(
               <Select
                 style={{ width: 120 }}
-                onChange={this.selectedCategoryChange}
+                // onChange={this.selectedCategoryChange}
               >
                 {this.state.selectCategories}
               </Select>
@@ -263,6 +260,7 @@ class ProductForm extends Component {
           <Form.Item label="Giá bán ra" {...formItemLayout}>
             {getFieldDecorator('price', {
               rules: [{ required: true, message: 'Vui lòng nhập giá bán ra!' }],
+              initialValue: '100',
             })(<InputNumber min={1} max={10000} placeholder="Giá bán ra" />)}
 
             <span>.000 VND</span>

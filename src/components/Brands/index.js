@@ -47,10 +47,10 @@ class Brands extends Component {
   componentDidMount() {
     let data = [];
     request.get(`/brands`).then(res => {
-      res.data.data.forEach((v, i) => {
+      res.data.forEach((v, i) => {
         const brand = {
-          key: v.attributes.id,
-          name: v.attributes.name,
+          key: v.id,
+          name: v.name,
         };
         data.push(brand);
       });
