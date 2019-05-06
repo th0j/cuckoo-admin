@@ -26,8 +26,8 @@ class Products extends PureComponent {
           name: v.name,
           availableOn: format(new Date(), 'DD/mm/YYYY') + '',
           img: v.variants[0].image_url,
-
-          category: 'son',
+          variants: v.variants,
+          category: '',
         };
         data.push(product);
       });
@@ -83,16 +83,16 @@ class Products extends PureComponent {
         dataIndex: 'availableOn',
         key: 'availableOn',
       },
-      {
-        title: 'Danh mục',
-        key: 'category',
-        dataIndex: 'category',
-        render: category => (
-          <Tag color="volcano" key={category}>
-            {category.toUpperCase()}
-          </Tag>
-        ),
-      },
+      // {
+      //   title: 'Danh mục',
+      //   key: 'category',
+      //   dataIndex: 'category',
+      //   render: category => (
+      //     <Tag color="volcano" key={category}>
+      //       {category.toUpperCase()}
+      //     </Tag>
+      //   ),
+      // },
       {
         title: '',
         key: 'action',
@@ -113,7 +113,7 @@ class Products extends PureComponent {
             Thêm sản phẩm
           </Button>
         </Link>
-        <Table dataSource={[...this.state.products]} columns={columns} />;
+        <Table dataSource={[...this.state.products]} columns={columns} />
       </div>
     );
   }

@@ -42,6 +42,7 @@ class ProductForm extends Component {
         params.append('product[category_id]', values.category);
         params.append('product[name]', values.name);
         params.append('variant[price]', values.price);
+        params.append('variant[cost]', values.cost);
         this._createOrUpdateProduct(params);
       }
     });
@@ -144,6 +145,8 @@ class ProductForm extends Component {
   _fillProductData = product => {
     this.props.form.setFieldsValue({
       name: product.name,
+      price: product.variants[0].price,
+      cost: product.variants[0].cost,
     });
   };
 
@@ -202,17 +205,25 @@ class ProductForm extends Component {
     };
 
     const { getFieldDecorator } = this.props.form;
-
-    return (
-      <div>
-        <Link to="/products/new">
+    const btnVariantList =
+      this.state.isEditing === true ? (
+        <Link
+          to={`/products/` + this.props.match.params.productId + `/variants`}
+        >
           <Button type="primary" style={{ marginBottom: '20px' }}>
             <Icon type="plus" />
             Mẫu mã
           </Button>
         </Link>
+      ) : (
+        ''
+      );
+
+    return (
+      <div>
+        {btnVariantList}
         <Form layout="horizontal" onSubmit={this.handleSubmit}>
-          <Form.Item label="Tên" {...formItemLayout}>
+          <Form.Item label="Tên sản phẩm" {...formItemLayout}>
             {getFieldDecorator('name', {
               rules: [
                 { required: true, message: 'Vui lòng nhập tên sản phẩm!' },
@@ -229,12 +240,7 @@ class ProductForm extends Component {
                 ? this.state.selectBrands[0].key + ''
                 : '',
             })(
-              <Select
-                style={{ width: 120 }}
-                // onChange={this.selectedBrandChange}
-              >
-                {this.state.selectBrands}
-              </Select>
+              <Select style={{ width: 120 }}>{this.state.selectBrands}</Select>
             )}
           </Form.Item>
 
@@ -245,10 +251,7 @@ class ProductForm extends Component {
                 ? this.state.selectCategories[0].key + ''
                 : '',
             })(
-              <Select
-                style={{ width: 120 }}
-                // onChange={this.selectedCategoryChange}
-              >
+              <Select style={{ width: 120 }}>
                 {this.state.selectCategories}
               </Select>
             )}
@@ -267,7 +270,11 @@ class ProductForm extends Component {
           </Form.Item>
 
           <Form.Item label="Giá nhập vào" {...formItemLayout}>
-            <InputNumber min={1} max={10000} placeholder="Giá nhập vào" />
+            {getFieldDecorator('cost', {
+              rules: [{ required: true, message: 'Vui lòng nhập giá bán ra!' }],
+              initialValue: '100',
+            })(<InputNumber min={1} max={10000} placeholder="Giá nhập vào" />)}
+
             <span>.000 VND</span>
           </Form.Item>
           <Form.Item label="Upload" {...formItemLayout}>

@@ -8,6 +8,8 @@ import {
   BrandForm,
   Categories,
   CategoryForm,
+  Variants,
+  VariantForm,
 } from './components';
 
 const App = () => (
@@ -15,7 +17,15 @@ const App = () => (
     <Switch>
       <Route exact path="/products" component={Products} />
       <Route exact path="/products/new" component={ProductForm} />
-      <Route path="/products/:productId" component={ProductForm} />
+      <Route exact path="/products/:productId" component={ProductForm} />
+
+      <Route exact path="/products/:productId/variants" component={Variants} />
+      <Route
+        exact
+        path="/products/:productId/variants/new"
+        component={VariantForm}
+      />
+
       <Route exact path="/brands" component={Brands} />
       <Route exact path="/brands/new" component={BrandForm} />
       <Route path="/brands/:brandId" component={BrandForm} />
